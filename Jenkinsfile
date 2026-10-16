@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-         stage('Tests') {
+                stage('Tests') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                     sh '''
@@ -41,4 +41,5 @@ pipeline {
                 }
             }
         }
+    }
 }
