@@ -20,15 +20,25 @@ pipeline {
             }
         }
 
-        stage('Tests') {
+         stage('Tests') {
             steps {
-                sh '.venv/bin/python -m pytest -v --junitxml=reports/junit.xml'
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                    sh '''
+                        .venv/bin/python -m pytest -v \
+                            --junitxml=reports/junit.xml \
+                            --cov=app \
+                            --cov-report=xml:reports/coverage.xml \
+                            --cov-report=term-missing
+                    '''
+                }
             }
             post {
                 always {
                     junit 'reports/junit.xml'
+                    recordCoverage(
+                        tools: [[parser: 'COBERTURA', pattern: 'reports/coverage.xml']]
+                    )
                 }
             }
         }
-    }
 }
